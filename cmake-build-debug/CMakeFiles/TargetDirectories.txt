@@ -1,0 +1,3 @@
+Q:/Studia/CLion/PEA3/cmake-build-debug/CMakeFiles/PEA3.dir
+Q:/Studia/CLion/PEA3/cmake-build-debug/CMakeFiles/edit_cache.dir
+Q:/Studia/CLion/PEA3/cmake-build-debug/CMakeFiles/rebuild_cache.dir

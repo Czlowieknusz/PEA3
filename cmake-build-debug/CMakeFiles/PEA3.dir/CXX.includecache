@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+Q:/Studia/CLion/PEA3/AlgorithmTSP.h
+DataLoader.h
+Q:/Studia/CLion/PEA3/DataLoader.h
+iostream
+-
+vector
+-
+iterator
+-
+
+Q:/Studia/CLion/PEA3/DataLoader.h
+fstream
+-
+
+Q:/Studia/CLion/PEA3/GeneticAlgorithm.cpp
+GeneticAlgorithm.h
+Q:/Studia/CLion/PEA3/GeneticAlgorithm.h
+vector
+-
+algorithm
+-
+
+Q:/Studia/CLion/PEA3/GeneticAlgorithm.h
+random
+-
+AlgorithmTSP.h
+Q:/Studia/CLion/PEA3/AlgorithmTSP.h
+
