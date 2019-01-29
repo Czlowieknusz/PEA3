@@ -9,12 +9,16 @@
 #include "AlgorithmTSP.h"
 
 struct GeneticConfiguration {
+    unsigned sizeOfPopultion_ = 1000;
     unsigned startVertex_ = 0;
+    unsigned numberOfSelections = 2;
 };
 
 class GeneticAlgorithm : public AlgorithmTSP {
 public:
     explicit GeneticAlgorithm(std::string fileName);
+
+    GeneticAlgorithm(std::string fileName, bool isAtsp);
 
     double CalculatePath(GeneticConfiguration &);
 
@@ -25,6 +29,24 @@ public:
     void EvaluatePath(Path &);
 
     void SortPaths(std::vector<Path> &);
+
+    void CreateCrossover();
+
+    void MakeMutations();
+
+    bool CheckIfCityInRange(std::vector<unsigned>, unsigned , unsigned, unsigned);
+
+    unsigned FindIndexOfNode(std::vector<unsigned>, unsigned);
+
+    void AddPathToNextGeneration(Path);
+
+    unsigned numberOfSelectedPaths;
+    unsigned sizeOfPopulation;
+    unsigned indexOfNextGeneration;
+    double probabilityOfMutation;
+    std::vector<Path> population_;
+    std::vector<Path> nextPopulation_;
+
 
     std::random_device random_device_global;
     std::mt19937_64 eng;

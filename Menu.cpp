@@ -45,12 +45,14 @@ void Menu::MainMenu() {
                 break;
             }
             case 3: {
-                unsigned startVertex = 0;
                 std::cout << "Name of file: ";
                 std::string fileName;
                 std::cin >> fileName;
+                GeneticAlgorithm geneticAlgorithmATSP(std::move(fileName), true);
                 std::cout << "Which vertex do u want to start from?" << std::endl;
-                std::cin >> startVertex;
+                GeneticConfiguration geneticConfigurationATSP;
+                std::cin >> geneticConfigurationATSP.startVertex_;
+                geneticAlgorithmATSP.InitAlgorithm(geneticConfigurationATSP);
                 break;
             }
             case 4: {

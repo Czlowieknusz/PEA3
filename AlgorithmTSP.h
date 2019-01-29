@@ -13,8 +13,6 @@ struct Path {
 
     Path() = default;
 
-    Path(unsigned cost) : cost_(cost) {}
-
     Path(unsigned startVertex, unsigned graphSize) : startVertex_(startVertex),
                                                               cost_(0), path_(graphSize) {}
 
@@ -22,9 +20,9 @@ struct Path {
         std::copy(path_.begin(), path_.end(), std::ostream_iterator<unsigned>(std::cout, " "));
     }
 
-    explicit Path(const Path &path) {
+    Path(const Path &path) {
         cost_ = path.cost_;
-//        startVertex_ = path.startVertex_;
+        startVertex_ = path.startVertex_;
         path_ = path.path_;
     }
 
