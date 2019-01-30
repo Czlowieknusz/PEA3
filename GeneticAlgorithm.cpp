@@ -25,7 +25,7 @@ GeneticAlgorithm::GeneticAlgorithm(std::string fileName) : AlgorithmTSP(std::mov
 /*
  *  1. Init variables (size of population, population and fitness.
  *  2. Random paths at the beginning.
- *  3. these fckin phases including:
+ *  3. these phases including:
  *      - mutation (swap)
  *      - crossover (we choose a segment and rewrite it into new gene(it was called like that?) at the same position) and the rest from left to right
  */
@@ -67,7 +67,9 @@ double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguratio
     for (int generationIndex = 0; generationIndex < numberOfGenerations; ++generationIndex) {
         indexOfNextGeneration = 0;
         // Selection
+        //std::cout << "h";
         CreateCrossover();
+        //std::cout << "c";
 
         for (unsigned i = 0; i < sizeOfElite_; ++i) {
             AddPathToNextGeneration(population_[i]);
@@ -87,6 +89,7 @@ double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguratio
 }
 
 void GeneticAlgorithm::EvaluatePath(Path &path) {
+
     path.cost_ = graph_[path.startVertex_][path.path_[0]];
     for (unsigned i = 0; i < path.path_.size() - 1; ++i) {
         path.cost_ += graph_[path.path_[i]][path.path_[i + 1]];
@@ -107,54 +110,56 @@ void GeneticAlgorithm::CreateCrossover() {
     std::uniform_int_distribution<unsigned> dist(0, rankingMax_);
     /*
     *  Crossover
-     */
+    */
+    //std::cout << "tutaj";
     for (unsigned crossoverIndex = 0; crossoverIndex < numberOfCrossovers; ++crossoverIndex) {
+        //std::cout << crossoverIndex << ";";
         unsigned beginIndex = distributionProbability(eng), endIndex = distributionProbability(eng);
         if (beginIndex > endIndex) {
             std::swap(beginIndex, endIndex);
         }
+        /*if(endIndex >= graphSize_) {
+            std::cout << "gotcha~!";
+        }*/
         unsigned indexFirstParent = 0;
         unsigned indexSecondParent = 1;
         unsigned randomIndex = dist(eng);
 
-        for (unsigned i = 0; i < sizeOfPopulation; ++i) {
-            //std::cout << "randomIndex = " << randomIndex << "; rankTab = " << rankingTab_[0] << std::endl;
+        for (unsigned i = 0; i < sizeOfPopulation-1; ++i) {
             if (randomIndex <= rankingTab_[i]) {
-                //       std::cout << "lajeja" << std::endl;
                 indexFirstParent = i;
                 break;
             }
         }
         do {
             randomIndex = dist(eng);
-            for (unsigned i = 0; i < sizeOfPopulation; ++i) {
+            for (unsigned i = 0; i < sizeOfPopulation-1; ++i) {
                 if (randomIndex <= rankingTab_[i]) {
-                    //         std::cout << "halo" << std::endl;
                     indexSecondParent = i;
                     break;
                 }
             }
-        } while (indexFirstParent == indexSecondParent);
+        } while (indexFirstParent == indexSecondParent  );
 
         Path &firstParent = population_[indexFirstParent];
         Path &secondParent = population_[indexSecondParent];
         Path child = firstParent;
 
-        /*unsigned numberOfCitiesToCopy = endIndex - beginIndex;
-        unsigned cityIndex = 0;
-        unsigned copiedCities = 0;*/
-
+        /*if (crossoverIndex == 97)
+            std::cout << child << std::endl;*/
         for (unsigned index = beginIndex; index <= endIndex; ++index) {
             std::swap(child.path_[index], child.path_[FindIndexOfNode(child.path_, secondParent.path_[index])]);
         }
-     //   std::cout << " hihiha" << std::endl;
         // Add child to new generation
+        /*std::cout << "ev";
+        if (crossoverIndex == 97)
+            std::cout << child << std::endl;
+        std::cout << "y";*/
         EvaluatePath(child);
-        //std::cout << "TU TERAZ: " << child << std::endl << firstParent << std::endl << secondParent << std::endl;
-   //     std::cout << "Materia pozakosmiczna: " << indexOfNextGeneration << std::endl;
+        //std::cout << "r";
         AddPathToNextGeneration(child);
+        //std::cout << "t";
     }
-   // std::cout << " po algo" << std::endl;
 }
 
 bool GeneticAlgorithm::CheckIfCityInRange(std::vector<unsigned> path, unsigned beginIndex, unsigned endIndex,
@@ -179,7 +184,6 @@ unsigned GeneticAlgorithm::FindIndexOfNode(std::vector<unsigned> path, unsigned 
 void GeneticAlgorithm::AddPathToNextGeneration(Path path) {
     nextPopulation_[indexOfNextGeneration] = path;
     ++indexOfNextGeneration;
-    //std::cout << " next" << nextPopulation_[indexOfNextGeneration] << std::endl;
 }
 
 GeneticAlgorithm::GeneticAlgorithm(std::string fileName, bool isAtsp) : AlgorithmTSP(isAtsp, fileName) {
@@ -188,19 +192,14 @@ GeneticAlgorithm::GeneticAlgorithm(std::string fileName, bool isAtsp) : Algorith
 
 void GeneticAlgorithm::MakeMutations() {
     std::uniform_real_distribution<double> distributionProbabilityReal(0, 1);
-    std::uniform_int_distribution<unsigned> distributionProbabilityInt(0, graphSize_);
+    std::uniform_int_distribution<unsigned> distributionProbabilityInt(0, graphSize_-2);
     for (unsigned i = 0; i < sizeOfPopulation; ++i) {
         if (distributionProbabilityReal(eng) < probabilityOfMutation) {
             std::swap(nextPopulation_[i].path_[distributionProbabilityInt(eng)],
                       nextPopulation_[i].path_[distributionProbabilityInt(eng)]);
         }
     }
-   // std::cout <<" haaaaalao" << std::endl;
 }
-
-/*
- * Pamietaj Janek, bo być może zaśniesz: rankingTab przcchowuje jedynie wartość
- */
 
 void GeneticAlgorithm::CreateRankingTab() {
     rankingTab_.resize(sizeOfPopulation);
