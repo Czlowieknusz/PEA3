@@ -34,6 +34,8 @@ public:
 
     void MakeMutations();
 
+    void CreateRankingTab();
+
     bool CheckIfCityInRange(std::vector<unsigned>, unsigned , unsigned, unsigned);
 
     unsigned FindIndexOfNode(std::vector<unsigned>, unsigned);
@@ -43,10 +45,12 @@ public:
     unsigned numberOfSelectedPaths;
     unsigned sizeOfPopulation;
     unsigned indexOfNextGeneration;
+    unsigned rankingMax_;
     double probabilityOfMutation;
+
     std::vector<Path> population_;
     std::vector<Path> nextPopulation_;
-
+    std::vector<unsigned > rankingTab_;
 
     std::random_device random_device_global;
     std::mt19937_64 eng;

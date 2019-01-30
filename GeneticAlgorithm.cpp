@@ -58,15 +58,19 @@ double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguratio
     nextPopulation_.resize(sizeOfPopulation);
 
     CreatePopulation(population_, geneticConfiguration.startVertex_);
+    CreateRankingTab();
 
+    rankingMax_ = (graphSize_ * graphSize_ + graphSize_) / 2;
     numberOfSelectedPaths = geneticConfiguration.numberOfSelections;
+
+    unsigned sizeOfElite = sizeOfPopulation * 0.8;
 
     SortPaths(population_);
     /*for (auto &x : population_) {
         std::cout << "koszt: " << x.cost_ << std::endl;
     }*/
 
-    const unsigned numberOfGenerations = 10000;
+    const unsigned numberOfGenerations = 1000;
     probabilityOfMutation = 0.1;
     //MakeMutations();
 
@@ -78,11 +82,12 @@ double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguratio
         // Selection
         CreateCrossover();
 
-        for (unsigned i = 0; i < 5; ++i) {
+        for (unsigned i = sizeOfPopulation - sizeOfElite; i < sizeOfPopulation; ++i) {
             //std::cout << "Size of population: " << nextPopulation.size() << "; sizeofPop-i" << sizeOfPopulation-i << std::endl;
             nextPopulation_[sizeOfPopulation - i - 1] = population_[i];
             // std::cout << "TU PATRZ: " << nextPopulation_[sizeOfPopulation-i-1] << std::endl <<"A teraz tutaj: " << population_[i] << std::endl;
         }
+
         // Crossover
 
         // Mutation
@@ -130,16 +135,42 @@ void GeneticAlgorithm::CreateCrossover() {
     unsigned numberOfCrossovers = sizeOfPopulation - 4;
     std::uniform_int_distribution<unsigned> distributionProbability(0, graphSize_ - 2);
 
+    std::uniform_int_distribution<unsigned> dist(0, rankingMax_);
     /*
-     * Crossover
+    *  Crossover
      */
+    //std::cout <<" Petla?" << std::endl;
     for (unsigned crossoverIndex = 1; crossoverIndex < numberOfCrossovers; ++crossoverIndex) {
         unsigned beginIndex = distributionProbability(eng), endIndex = distributionProbability(eng);
         if (beginIndex > endIndex) {
             std::swap(beginIndex, endIndex);
         }
-        Path &firstParent = population_[0];
-        Path &secondParent = population_[crossoverIndex];
+
+        unsigned indexFirstParent = 0;
+        unsigned indexSecondParent = 1;
+        unsigned randomIndex = dist(eng);
+
+        for (unsigned i = 0; i < graphSize_; ++i) {
+            //std::cout << "randomIndex = " << randomIndex << "; rankTab = " << rankingTab_[0] << std::endl;
+            if (randomIndex <= rankingTab_[i]) {
+                //       std::cout << "lajeja" << std::endl;
+                indexFirstParent = i;
+                break;
+            }
+        }
+        do {
+            randomIndex = dist(eng);
+            for (unsigned i = 0; i < graphSize_; ++i) {
+                if (randomIndex <= rankingTab_[i]) {
+                    //         std::cout << "halo" << std::endl;
+                    indexSecondParent = i;
+                    break;
+                }
+            }
+        } while (indexFirstParent == indexSecondParent);
+
+        Path &firstParent = population_[indexFirstParent];
+        Path &secondParent = population_[indexSecondParent];
         Path child = firstParent;
 
         /*unsigned numberOfCitiesToCopy = endIndex - beginIndex;
@@ -149,7 +180,6 @@ void GeneticAlgorithm::CreateCrossover() {
         for (unsigned index = beginIndex; index <= endIndex; ++index) {
             std::swap(child.path_[index], child.path_[FindIndexOfNode(child.path_, secondParent.path_[index])]);
         }
-
 
         // Add child to new generation
         EvaluatePath(child);
@@ -189,11 +219,23 @@ GeneticAlgorithm::GeneticAlgorithm(std::string fileName, bool isAtsp) : Algorith
 
 void GeneticAlgorithm::MakeMutations() {
     std::uniform_real_distribution<double> distributionProbabilityReal(0, 1);
-    std::uniform_int_distribution<unsigned> distributionProbabilityInt(0, 1);
+    std::uniform_int_distribution<unsigned> distributionProbabilityInt(0, graphSize_);
     for (unsigned i = 0; i < sizeOfPopulation; ++i) {
         if (distributionProbabilityReal(eng) < probabilityOfMutation) {
             std::swap(nextPopulation_[i].path_[distributionProbabilityInt(eng)],
                       nextPopulation_[i].path_[distributionProbabilityInt(eng)]);
         }
+    }
+}
+
+/*
+ * Pamietaj Janek, bo być może zaśniesz: rankingTab przcchowuje jedynie wartość
+ */
+
+void GeneticAlgorithm::CreateRankingTab() {
+    rankingTab_.resize(sizeOfPopulation);
+    rankingTab_[0] = graphSize_;
+    for (unsigned i = 1; i < graphSize_; ++i) {
+        rankingTab_[i] = graphSize_ - i + rankingTab_[i - 1];
     }
 }
