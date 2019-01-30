@@ -52,7 +52,8 @@ void Menu::MainMenu() {
                 std::cout << "Which vertex do u want to start from?" << std::endl;
                 GeneticConfiguration geneticConfigurationATSP;
                 std::cin >> geneticConfigurationATSP.startVertex_;
-                geneticAlgorithmATSP.InitAlgorithm(geneticConfigurationATSP);
+                double time = geneticAlgorithmATSP.InitAlgorithm(geneticConfigurationATSP);
+                std::cout << "Solution found in: " << time << std::endl;
                 break;
             }
             case 4: {

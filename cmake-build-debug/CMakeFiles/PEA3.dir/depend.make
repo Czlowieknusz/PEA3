@@ -8,6 +8,7 @@ CMakeFiles/PEA3.dir/GeneticAlgorithm.cpp.obj: ../AlgorithmTSP.h
 CMakeFiles/PEA3.dir/GeneticAlgorithm.cpp.obj: ../DataLoader.h
 CMakeFiles/PEA3.dir/GeneticAlgorithm.cpp.obj: ../GeneticAlgorithm.cpp
 CMakeFiles/PEA3.dir/GeneticAlgorithm.cpp.obj: ../GeneticAlgorithm.h
+CMakeFiles/PEA3.dir/GeneticAlgorithm.cpp.obj: ../Timer.h
 
 CMakeFiles/PEA3.dir/Menu.cpp.obj: ../AlgorithmTSP.h
 CMakeFiles/PEA3.dir/Menu.cpp.obj: ../DataLoader.h

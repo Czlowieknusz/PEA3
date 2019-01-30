@@ -27,10 +27,34 @@ vector
 -
 algorithm
 -
+Timer.h
+Q:/Studia/CLion/PEA3/Timer.h
 
 Q:/Studia/CLion/PEA3/GeneticAlgorithm.h
 random
 -
 AlgorithmTSP.h
 Q:/Studia/CLion/PEA3/AlgorithmTSP.h
+
+Q:/Studia/CLion/PEA3/Menu.cpp
+Menu.h
+Q:/Studia/CLion/PEA3/Menu.h
+Test.h
+Q:/Studia/CLion/PEA3/Test.h
+iostream
+-
+
+Q:/Studia/CLion/PEA3/Menu.h
+iostream
+-
+GeneticAlgorithm.h
+Q:/Studia/CLion/PEA3/GeneticAlgorithm.h
+
+Q:/Studia/CLion/PEA3/Test.h
+string
+-
+
+Q:/Studia/CLion/PEA3/Timer.h
+windows.h
+-
 

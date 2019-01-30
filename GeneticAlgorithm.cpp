@@ -5,11 +5,15 @@
 #include "GeneticAlgorithm.h"
 #include <vector>
 #include <algorithm>
+#include "Timer.h"
 
 double GeneticAlgorithm::InitAlgorithm(GeneticConfiguration &geneticConfiguration) {
     //PrintGraph();
+    Timer t;
+    t.StartCounter();
     CalculatePath(geneticConfiguration);
-    return 0;
+    double time = t.GetCounter();
+    return time;
 }
 
 GeneticAlgorithm::GeneticAlgorithm(std::string fileName) : AlgorithmTSP(std::move(fileName)),
