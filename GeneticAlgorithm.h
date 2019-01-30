@@ -46,6 +46,7 @@ public:
     unsigned sizeOfPopulation;
     unsigned indexOfNextGeneration;
     unsigned rankingMax_;
+    unsigned sizeOfElite_;
     double probabilityOfMutation;
 
     std::vector<Path> population_;

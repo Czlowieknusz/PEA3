@@ -47,12 +47,6 @@ void GeneticAlgorithm::CreatePopulation(std::vector<Path> &population, unsigned 
 }
 
 double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguration) {
-
-    /*
-    unsigned sizeOfPopulation = 10;
-    std::vector<Path> population(sizeOfPopulation);
-    std::vector<Path> nextPopulation(sizeOfPopulation);
-*/
     sizeOfPopulation = geneticConfiguration.sizeOfPopultion_;
     population_.resize(sizeOfPopulation);
     nextPopulation_.resize(sizeOfPopulation);
@@ -63,66 +57,41 @@ double GeneticAlgorithm::CalculatePath(GeneticConfiguration &geneticConfiguratio
     rankingMax_ = (graphSize_ * graphSize_ + graphSize_) / 2;
     numberOfSelectedPaths = geneticConfiguration.numberOfSelections;
 
-    unsigned sizeOfElite = sizeOfPopulation * 0.8;
+    sizeOfElite_ = sizeOfPopulation * 0.1;
 
     SortPaths(population_);
-    /*for (auto &x : population_) {
-        std::cout << "koszt: " << x.cost_ << std::endl;
-    }*/
 
     const unsigned numberOfGenerations = 1000;
     probabilityOfMutation = 0.1;
-    //MakeMutations();
 
     for (int generationIndex = 0; generationIndex < numberOfGenerations; ++generationIndex) {
-
-        //
         indexOfNextGeneration = 0;
-
         // Selection
         CreateCrossover();
 
-        for (unsigned i = sizeOfPopulation - sizeOfElite; i < sizeOfPopulation; ++i) {
-            //std::cout << "Size of population: " << nextPopulation.size() << "; sizeofPop-i" << sizeOfPopulation-i << std::endl;
-            nextPopulation_[sizeOfPopulation - i - 1] = population_[i];
-            // std::cout << "TU PATRZ: " << nextPopulation_[sizeOfPopulation-i-1] << std::endl <<"A teraz tutaj: " << population_[i] << std::endl;
+        for (unsigned i = 0; i < sizeOfElite_; ++i) {
+            AddPathToNextGeneration(population_[i]);
         }
 
         // Crossover
 
         // Mutation
 
-        /*for(unsigned i = 0 ; i < sizeOfPopulation; ++i) {
-            if(population_[i].cost_ != nextPopulation_[i].cost_) {
-                std::cout << "hmmm: " << population_[i].cost_ << "; " << nextPopulation_[i].cost_ <<std::endl;
-            }
-        }*/
-
         MakeMutations();
 
         population_ = nextPopulation_;
         SortPaths(population_);
     }
-
     std::cout << "Best: " << population_[0] << std::endl;
-
     return 0;
 }
 
 void GeneticAlgorithm::EvaluatePath(Path &path) {
-    //std::cout << graph_[path.startVertex_][path.path_[0]] << "; ";
     path.cost_ = graph_[path.startVertex_][path.path_[0]];
     for (unsigned i = 0; i < path.path_.size() - 1; ++i) {
-//        std::cout << graph_[path.path_[i]][path.path_[i + 1]] << "; ";
         path.cost_ += graph_[path.path_[i]][path.path_[i + 1]];
     }
-//    std::cout << graph_[path.path_[path.path_.size() - 1]][path.startVertex_] << "; ";
     path.cost_ += graph_[path.path_[path.path_.size() - 1]][path.startVertex_];
-//    std::cout << "For path: ";
-//    for (auto i : path.path_) {
-//        std::cout << i << "; ";
-//    }
-//    std::cout << "cost is " << path.cost_ << std::endl;
 }
 
 void GeneticAlgorithm::SortPaths(std::vector<Path> &population) {
@@ -132,25 +101,23 @@ void GeneticAlgorithm::SortPaths(std::vector<Path> &population) {
 }
 
 void GeneticAlgorithm::CreateCrossover() {
-    unsigned numberOfCrossovers = sizeOfPopulation - 4;
+    unsigned numberOfCrossovers = sizeOfPopulation - sizeOfElite_;
     std::uniform_int_distribution<unsigned> distributionProbability(0, graphSize_ - 2);
 
     std::uniform_int_distribution<unsigned> dist(0, rankingMax_);
     /*
     *  Crossover
      */
-    //std::cout <<" Petla?" << std::endl;
-    for (unsigned crossoverIndex = 1; crossoverIndex < numberOfCrossovers; ++crossoverIndex) {
+    for (unsigned crossoverIndex = 0; crossoverIndex < numberOfCrossovers; ++crossoverIndex) {
         unsigned beginIndex = distributionProbability(eng), endIndex = distributionProbability(eng);
         if (beginIndex > endIndex) {
             std::swap(beginIndex, endIndex);
         }
-
         unsigned indexFirstParent = 0;
         unsigned indexSecondParent = 1;
         unsigned randomIndex = dist(eng);
 
-        for (unsigned i = 0; i < graphSize_; ++i) {
+        for (unsigned i = 0; i < sizeOfPopulation; ++i) {
             //std::cout << "randomIndex = " << randomIndex << "; rankTab = " << rankingTab_[0] << std::endl;
             if (randomIndex <= rankingTab_[i]) {
                 //       std::cout << "lajeja" << std::endl;
@@ -160,7 +127,7 @@ void GeneticAlgorithm::CreateCrossover() {
         }
         do {
             randomIndex = dist(eng);
-            for (unsigned i = 0; i < graphSize_; ++i) {
+            for (unsigned i = 0; i < sizeOfPopulation; ++i) {
                 if (randomIndex <= rankingTab_[i]) {
                     //         std::cout << "halo" << std::endl;
                     indexSecondParent = i;
@@ -180,12 +147,14 @@ void GeneticAlgorithm::CreateCrossover() {
         for (unsigned index = beginIndex; index <= endIndex; ++index) {
             std::swap(child.path_[index], child.path_[FindIndexOfNode(child.path_, secondParent.path_[index])]);
         }
-
+     //   std::cout << " hihiha" << std::endl;
         // Add child to new generation
         EvaluatePath(child);
         //std::cout << "TU TERAZ: " << child << std::endl << firstParent << std::endl << secondParent << std::endl;
+   //     std::cout << "Materia pozakosmiczna: " << indexOfNextGeneration << std::endl;
         AddPathToNextGeneration(child);
     }
+   // std::cout << " po algo" << std::endl;
 }
 
 bool GeneticAlgorithm::CheckIfCityInRange(std::vector<unsigned> path, unsigned beginIndex, unsigned endIndex,
@@ -226,6 +195,7 @@ void GeneticAlgorithm::MakeMutations() {
                       nextPopulation_[i].path_[distributionProbabilityInt(eng)]);
         }
     }
+   // std::cout <<" haaaaalao" << std::endl;
 }
 
 /*
